@@ -1,7 +1,26 @@
-@extends('frontend.layouts.reports')
+@extends('frontend.layouts.master')
+
+@section('title', 'Events ||')
+
 
 @section('content')
-
-@include('frontend.reports.sections.report')
+  <!--Page Header Start-->
+        <section class="page-header">
+            <div class="page-header__bg" style="background-image: url({{asset('frontend/admin/assets/images/backgrounds/page-header-bg.jpg')}});">
+            </div>
+            <div class="container">
+                <div class="page-header__inner">
+                    <h2>Annual Report</h2>
+                    <div class="thm-breadcrumb__box">
+                        <ul class="thm-breadcrumb list-unstyled">
+                            <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
+                            <li><span class="icon-right-arrow-1"></span></li>
+                            <li>Annual Report</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+  @include('frontend.reports.sections.report')
 
 @endsection

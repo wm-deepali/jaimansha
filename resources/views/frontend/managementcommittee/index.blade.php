@@ -1,4 +1,6 @@
-@extends('frontend.layouts.management')
+@extends('frontend.layouts.master')
+
+@section('title', 'Events ||')
 
 @section('content')
 
