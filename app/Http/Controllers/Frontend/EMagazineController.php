@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Frontend\EMagazine;
-use App\Models\Admin\Emagazine\Author;
+use App\Models\admin\Emagazine\Author;
 
 class EMagazineController extends Controller
 {

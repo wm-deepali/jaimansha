@@ -47,62 +47,26 @@
                 <div class="col-lg-7">
                     <h3 class="mb-4 fw-bold">Current Openings</h3>
 
-                    {{-- Job Card 1 --}}
-                    <div class="job-card p-4 mb-3 shadow-sm rounded">
-                        <h5 class="mb-3 fw-bold text-primary">Software Developer</h5>
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2">
-                                <i class="bi bi-mortarboard-fill text-secondary me-2"></i>
-                                <strong>Qualification:</strong> B.Tech in Computer Science
-                            </li>
-                            <li class="mb-2">
-                                <i class="bi bi-geo-alt-fill text-secondary me-2"></i>
-                                <strong>Job Location:</strong> New Delhi
-                            </li>
-                            <li>
-                                <i class="bi bi-people-fill text-secondary me-2"></i>
-                                <strong>No. of Candidates:</strong> 3
-                            </li>
-                        </ul>
-                    </div>
+                    @foreach($jobs as $job)
+                        <div class="job-card p-4 mb-3 shadow-sm rounded">
+                            <h5 class="mb-3 fw-bold text-primary">{{ $job->job_title }}</h5>
+                            <ul class="list-unstyled mb-0">
+                                <li class="mb-2">
+                                    <i class="bi bi-mortarboard-fill text-secondary me-2"></i>
+                                    <strong>Qualification:</strong> {{ $job->qualification }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="bi bi-geo-alt-fill text-secondary me-2"></i>
+                                    <strong>Job Location:</strong> {{ $job->job_location }}
+                                </li>
+                                <li>
+                                    <i class="bi bi-people-fill text-secondary me-2"></i>
+                                    <strong>No. of Candidates:</strong> {{ $job->num_candidates }}
+                                </li>
+                            </ul>
+                        </div>
+                    @endforeach
 
-                    {{-- Job Card 2 --}}
-                    <div class="job-card p-4 mb-3 shadow-sm rounded">
-                        <h5 class="mb-3 fw-bold text-primary">Marketing Executive</h5>
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2">
-                                <i class="bi bi-mortarboard-fill text-secondary me-2"></i>
-                                <strong>Qualification:</strong> MBA in Marketing
-                            </li>
-                            <li class="mb-2">
-                                <i class="bi bi-geo-alt-fill text-secondary me-2"></i>
-                                <strong>Job Location:</strong> Mumbai
-                            </li>
-                            <li>
-                                <i class="bi bi-people-fill text-secondary me-2"></i>
-                                <strong>No. of Candidates:</strong> 2
-                            </li>
-                        </ul>
-                    </div>
-
-                    {{-- Job Card 3 --}}
-                    <div class="job-card p-4 mb-3 shadow-sm rounded">
-                        <h5 class="mb-3 fw-bold text-primary">Graphic Designer</h5>
-                        <ul class="list-unstyled mb-0">
-                            <li class="mb-2">
-                                <i class="bi bi-mortarboard-fill text-secondary me-2"></i>
-                                <strong>Qualification:</strong> Diploma in Graphic Design
-                            </li>
-                            <li class="mb-2">
-                                <i class="bi bi-geo-alt-fill text-secondary me-2"></i>
-                                <strong>Job Location:</strong> Bangalore
-                            </li>
-                            <li>
-                                <i class="bi bi-people-fill text-secondary me-2"></i>
-                                <strong>No. of Candidates:</strong> 1
-                            </li>
-                        </ul>
-                    </div>
                 </div>
 
                 {{-- Styles --}}
@@ -115,7 +79,8 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <div id="application-success" class="alert alert-success d-none"></div>
-                            <form id="careerForm" action="{{ route('career.apply') }}" method="POST" enctype="multipart/form-data">
+                            <form id="careerForm" action="{{ route('career.apply') }}" method="POST"
+                                enctype="multipart/form-data">
 
                                 @csrf
 
@@ -123,11 +88,19 @@
                                     <label for="applied_post" class="form-label">Select Job Opening</label>
                                     <select name="applied_post" id="applied_post" class="form-select" required>
                                         <option value="">-- Select Job --</option>
-                                        <option value="Software Developer">Software Developer</option>
-                                        <option value="Marketing Executive">Marketing Executive</option>
-                                        <option value="Graphic Designer">Graphic Designer</option>
+                                        @foreach($jobs as $job)
+                                            <option value="{{ $job->job_title }}">{{ $job->job_title }}</option>
+                                        @endforeach
+                                        <option value="other">Other</option>
                                     </select>
                                 </div>
+
+                                <div class="mb-3 d-none" id="other_job_div">
+                                    <label for="other_job" class="form-label">Please specify other job title</label>
+                                    <input type="text" name="other_job" id="other_job" class="form-control"
+                                        placeholder="Enter job title">
+                                </div>
+
 
                                 <div class="mb-3">
                                     <label for="qualification" class="form-label">Qualification</label>
@@ -185,47 +158,66 @@
 @endsection
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('careerForm');
-    const successDiv = document.getElementById('application-success');
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        successDiv.classList.add('d-none');
-        successDiv.innerText = '';
 
-        const formData = new FormData(form);
+    document.addEventListener('DOMContentLoaded', function() {
+    const appliedPostSelect = document.getElementById('applied_post');
+    const otherJobDiv = document.getElementById('other_job_div');
+    const otherJobInput = document.getElementById('other_job');
 
-        fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-            },
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success){
-                successDiv.innerText = data.success;
-                successDiv.classList.remove('d-none');
-                form.reset(); // Optionally clear the form
-            }else if(data.errors){
-                // Show validation errors
-                let errors = Object.values(data.errors).flat().join('\n');
-                successDiv.innerText = errors;
-                successDiv.classList.remove('d-none');
-                successDiv.classList.remove('alert-success');
-                successDiv.classList.add('alert-danger');
-            }
-        })
-        .catch(error => {
-            successDiv.innerText = 'Something went wrong. Please try again.';
-            successDiv.classList.remove('d-none');
-            successDiv.classList.remove('alert-success');
-            successDiv.classList.add('alert-danger');
-        });
+    appliedPostSelect.addEventListener('change', function() {
+        if (this.value === 'other') {
+            otherJobDiv.classList.remove('d-none');
+            otherJobInput.setAttribute('required', true);
+        } else {
+            otherJobDiv.classList.add('d-none');
+            otherJobInput.removeAttribute('required');
+            otherJobInput.value = '';
+        }
     });
 });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('careerForm');
+        const successDiv = document.getElementById('application-success');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            successDiv.classList.add('d-none');
+            successDiv.innerText = '';
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        successDiv.innerText = data.success;
+                        successDiv.classList.remove('d-none');
+                        form.reset(); // Optionally clear the form
+                    } else if (data.errors) {
+                        // Show validation errors
+                        let errors = Object.values(data.errors).flat().join('\n');
+                        successDiv.innerText = errors;
+                        successDiv.classList.remove('d-none');
+                        successDiv.classList.remove('alert-success');
+                        successDiv.classList.add('alert-danger');
+                    }
+                })
+                .catch(error => {
+                    successDiv.innerText = 'Something went wrong. Please try again.';
+                    successDiv.classList.remove('d-none');
+                    successDiv.classList.remove('alert-success');
+                    successDiv.classList.add('alert-danger');
+                });
+        });
+    });
 </script>
