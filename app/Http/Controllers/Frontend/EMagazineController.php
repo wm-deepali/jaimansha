@@ -14,13 +14,31 @@ class EMagazineController extends Controller
     {
         $magazines = EMagazine::all();
 
-        return view('frontend.emagazine.index', compact('magazines'));
+        // Fetch writers with author_type 'writer' (adjust model and column names as per your schema)
+        $writers = Author::where('author_type', 'magazine')->get();
+        // dd($writers);
+        return view('frontend.emagazine.index', compact('magazines', 'writers'));
     }
 
+
     // Show details of a single publication
-      public function show($id)
+    public function show($id)
     {
         $magazines = EMagazine::with('author')->findOrFail($id);
         return view('frontend.emagazine_details.index', compact('magazines'));
     }
+
+
+    public function showWriter($id)
+    {
+        // Get the writer by id if needed:
+        // $writer = Author::findOrFail($id);
+
+        // Get all magazines/articles by this writer
+        $articles = EMagazine::where('author_id', $id)->get();
+
+        return view('frontend.writer_articles', compact('articles'));
+    }
+
+
 }

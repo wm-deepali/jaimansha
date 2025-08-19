@@ -31,6 +31,11 @@ class SponshorshipController extends Controller
             'detail' => 'nullable|string|max:1000',
         ]);
 
+        $countryName = \App\Models\Country::find($request->country)?->name ?? '';
+        $stateName = \App\Models\State::find($request->state)?->name ?? '';
+        $cityName = \App\Models\City::find($request->city)?->name ?? '';
+
+
         SponsorshipRegistration::create([
             'sponsorship_type' => $request->sponsorship_type,
             'full_name' => $request->full_name,
@@ -38,9 +43,9 @@ class SponshorshipController extends Controller
             'mobile' => $request->mobile,
             'company_name' => $request->company_name,
             'address' => $request->address,
-            'country' => $request->country,
-            'state' => $request->state,
-            'city' => $request->city,
+            'city' => $cityName,
+            'state' => $stateName,
+            'country' => $countryName,
             'pincode' => $request->pincode,
             'detail' => $request->detail,
         ]);

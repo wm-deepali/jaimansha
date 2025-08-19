@@ -11,12 +11,12 @@
         </div>
         <div class="container">
             <div class="page-header__inner">
-                <h2>E-Magazine</h2>
+                <h2>Article by Writer</h2>
                 <div class="thm-breadcrumb__box">
                     <ul class="thm-breadcrumb list-unstyled">
                         <li><a href="index.html"><i class="fas fa-home"></i>Home</a></li>
                         <li><span class="icon-right-arrow-1"></span></li>
-                        <li>E-Magazine</li>
+                        <li>Article by Writer</li>
                     </ul>
                 </div>
             </div>
@@ -36,7 +36,7 @@
             <div class="row">
                 <div class="col-md-8">
                     <div class="left-magzine-card">
-                        @foreach($magazines as $magazine)
+                        @foreach($articles as $magazine)
                             @if($magazine->author && $magazine->author->author_type === 'magazine')
                                 <div class="left-magzine-data-link">
                                     <p class="magazine-date">
@@ -66,33 +66,7 @@
 
                 </div>
 
-                <div class="col-md-4">
-
-                    <div class="left-magzine-card">
-                        <div class="top-magzine-right">
-                            <h6>OUR WRITERS</h6>
-                        </div>
-                        <hr>
-
-                        @foreach($writers as $writer)
-                            <div class="left-mag-list">
-                                <div class="left-mag-img">
-                                    <img src="{{ asset("uploads/authors/$writer->image" ?? 'default-profile.jpg') }}"
-                                        alt="{{ $writer->name }}">
-                                </div>
-                                <div class="left-magzine-data-link">
-                                    <p class="m-0 magzin-text-head">{{ $writer->name }}</p>
-                                    <p style="font-size: 12px; color: #9b9999;">
-                                        <i class="fa-solid fa-location-dot"></i> {{ $writer->address ?? 'Unknown' }}
-                                    </p>
-                            
-                                    <a  href="{{ route('writer.articles', $writer->id) }}" class="button-art">View All Articles</a>
-                                </div>
-                            </div>
-                            <hr>
-                        @endforeach
-                    </div>
-                </div>
+             
             </div>
         </div>
 

@@ -10,7 +10,7 @@ use App\Models\admin\scholarship\ScholarshipForm;
 
 class ScholarshipController extends Controller
 {
-     public function index()
+    public function index()
     {
         $contents = ScholarshipContent::first();
         $form = ScholarshipForm::first(); // ya specific id se: ScholarshipForm::find(1);
@@ -18,7 +18,7 @@ class ScholarshipController extends Controller
         return view('frontend.scholarship.index', compact('contents', 'form'));
     }
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
         // ✅ Validate request
         $validated = $request->validate([
@@ -49,6 +49,10 @@ class ScholarshipController extends Controller
             $documentPath = $request->file('document')->store('scholarship_docs', 'public');
         }
 
+        $countryName = \App\Models\Country::find($request->country)?->name ?? '';
+        $stateName = \App\Models\State::find($request->state)?->name ?? '';
+        $cityName = \App\Models\City::find($request->city)?->name ?? '';
+
         // ✅ Save to DB
         ScholarshipEnquiry::create([
             'name' => $validated['full_name'],
@@ -59,8 +63,9 @@ class ScholarshipController extends Controller
             'email' => $validated['email'],
             'mobile' => $validated['mobile'],
             'address' => $validated['address'],
-            'state' => $validated['state'],
-            'city' => $validated['city'],
+            'city' => $cityName,
+            'state' => $stateName,
+            // 'country' => $countryName,
             'status' => 'Pending',
             'special_circumstance' => $validated['purpose'],
             'added_date' => now(),

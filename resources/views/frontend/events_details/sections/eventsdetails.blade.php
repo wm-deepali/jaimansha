@@ -1,3 +1,38 @@
+      
+      <style>
+          .event-card {
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.event-info h6 {
+    font-size: 15px;
+    color: #444;
+}
+.event-info p {
+    font-size: 14px;
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+    background: #f0f8ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #007bff;
+    font-size: 18px;
+}
+
+      </style>
+      
+      
+      
         <section class="event-details">
             <div class="container">
                 <div class="row">
@@ -22,15 +57,36 @@
                                 <!--    </li>-->
                                 <!--</ul>-->
                                 <!--<p class="event-details__text-3">{!!$event->event_last_heading !!}</p>-->
-                                <div class="event-details__btn-box">
-                                    <a href="#" class="event-details__btn thm-btn">Donation Now<span
-                                            class=""></span><i></i></a>
-                                </div>
+
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-5">
                         <div class="event-details__right">
+                            <div class="event-details__recent-events-box mb-4">
+                        <h4 class="text-center mb-3 border-bottom">Recent Events</h4>
+                        <ul class="event-details__recent-events-list list-unstyled">
+                            @forelse($recentEvents as $recent)
+                                <li class="d-flex mb-2">
+                                    <div
+                                        style="width:60px; height:50px; overflow:hidden; border-radius:4px; margin-right:10px;">
+                                        <img src="{{ asset('public/' . $recent->banner_image) }}"
+                                            alt="{{ $recent->event_name }}" style="width:100%; height:auto;">
+                                    </div>
+                                    <div>
+                                        <a href="{{ route('frontend.events_details.index', $recent->slug) }}" class="event-one__btn thm-btn">
+                                            style="font-weight:500; color:#333;">{{ $recent->event_name }}</a>
+                                        <br>
+                                        <small class="text-secondary">
+                                            {{ \Carbon\Carbon::parse($recent->event_date)->format('j F Y') }}
+                                        </small>
+                                    </div>
+                                </li>
+                            @empty
+                                <li>No other events found.</li>
+                            @endforelse
+                        </ul>
+                    </div>
                             <div class="event-details__services-box">
                                 <h4 class="text-center mb-3 border-bottom">{{$event->event_name}}</h4>
                                 <ul class="event-details__services-list list-unstyled">
@@ -43,14 +99,7 @@
 </p>
 
                                     </li>
-                                    <!--<li>-->
-                                    <!--    <h5>Date<span>:</span></h5>-->
-                                    <!--    <p>{{$event->event_date}}</p>-->
-                                    <!--</li>-->
-                                    <!--<li>-->
-                                    <!--    <h5>Category<span>:</span></h5>-->
-                                    <!--    <p></p>-->
-                                    <!--</li>-->
+                                   
                                     <li>
                                         <h5>Phone<span>:</span></h5>
                                         <p><a href="tel:000854222">{{$event->mobile_number}}</a></p>
@@ -61,30 +110,32 @@
                                     </li>
                                 </ul>
                             </div>
-                            <!--<div class="event-details__google-map">-->
-                            <!--    <iframe-->
-                            <!--        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4562.753041141002!2d-118.80123790098536!3d34.152323469614075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80e82469c2162619%3A0xba03efb7998eef6d!2sCostco+Wholesale!5e0!3m2!1sbn!2sbd!4v1562518641290!5m2!1sbn!2sbd"-->
-                            <!--        class="event-details__google-map-one" allowfullscreen></iframe>-->
-                            <!--</div>-->
+                           
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <!--Event Details End-->
+
+<!--Event Details End-->
 <script>
+
     window.addEventListener("scroll", function() {
-  const sidebar = document.querySelector(".event-details__right");
-  const offset = 60; // header ke neeche ka gap
+  const serviceBox = document.querySelector(".event-details__services-box");
+  const offset = 60;
+
   if (window.scrollY > offset) {
-    sidebar.style.position = "fixed";
-    sidebar.style.top = offset + "px";
-    sidebar.style.right = "50px"; // apne design ke hisaab se adjust karo
-    sidebar.style.width = "380px"; // width fix karna jaruri hai
+    serviceBox.style.position = "fixed";
+    serviceBox.style.top = offset + "px";
+    serviceBox.style.right = "50px"; // adjust as needed
+    serviceBox.style.width = "380px"; // fix width for box
+    // Optional: give z-index if needed
+    // serviceBox.style.zIndex = "99";
   } else {
-    sidebar.style.position = "static";
-    sidebar.style.width = "auto";
+    serviceBox.style.position = "static";
+    serviceBox.style.width = "auto";
   }
 });
+
 
 </script>

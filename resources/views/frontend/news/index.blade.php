@@ -47,78 +47,50 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- PDF Type News --}}
-                            <tr>
-                                <td>14 Aug 2025, 10:30 AM</td>
-                                <td>
-                                    <a href="{{ asset('public/news_pdfs/news-sample1.pdf') }}" target="_blank"
-                                        class="fw-bold text-primary">
-                                        Annual Report 2025 Released
-                                    </a><br>
-                                    <a href="{{ asset('public/news_pdfs/news-sample1.pdf') }}" target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-1">
-                                        View PDF
-                                    </a>
-                                </td>
-                            </tr>
+                            @forelse($news as $item)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y, h:i A') }}</td>
+                                    <td>
+                                        {{-- PDF TYPE --}}
+                                        @if($item->news_type === 'pdf' && $item->pdf_file)
+                                            <a href="{{ asset('uploads/news_pdfs/' . $item->pdf_file) }}" target="_blank"
+                                                class="fw-bold text-primary">
+                                                {{ $item->news_title }}
+                                            </a><br>
+                                            <a href="{{ asset('uploads/news_pdfs/' . $item->pdf_file) }}" target="_blank"
+                                                class="btn btn-sm btn-outline-primary mt-1">
+                                                View PDF
+                                            </a>
 
-                            {{-- Description Type News --}}
-                            <tr>
-                                <td>12 Aug 2025, 04:15 PM</td>
-                                <td>
-                                    <strong>New Library Section Opened</strong>
-                                    <p class="mb-1 short-desc" id="short-desc-1">
-                                        The city library has inaugurated a new section dedicated to historical archives...
-                                    </p>
-                                    <div class="full-desc d-none" id="full-desc-1">
-                                        The city library has inaugurated a new section dedicated to historical archives,
-                                        featuring manuscripts, maps, and books dating back to the 17th century. The section
-                                        is open for public visits every weekday from 10 AM to 6 PM.
-                                    </div>
-                                    <a href="javascript:void(0)" class="text-primary" onclick="toggleDescription(1)">Read
-                                        More</a>
-                                </td>
-                            </tr>
+                                            {{-- DETAIL TYPE --}}
+                                        @elseif($item->news_type === 'detail' && $item->detail_content)
+                                            <strong>{{ $item->news_title }}</strong>
+                                            <p class="mb-1 short-desc" id="short-desc-{{ $item->id }}">
+                                                {{ \Illuminate\Support\Str::limit(strip_tags($item->detail_content), 100) }}
+                                            </p>
+                                            <div class="full-desc d-none" id="full-desc-{{ $item->id }}">
+                                                {!! $item->detail_content !!}
+                                            </div>
+                                            <a href="javascript:void(0)" class="text-primary"
+                                                onclick="toggleDescription({{ $item->id }})">Read More</a>
 
-                            {{-- Only Title Type News --}}
-                            <tr>
-                                <td>10 Aug 2025, 09:00 AM</td>
-                                <td><strong>Community Sports Day Announced</strong></td>
-                            </tr>
-
-                            {{-- Another PDF News --}}
-                            <tr>
-                                <td>08 Aug 2025, 03:20 PM</td>
-                                <td>
-                                    <a href="{{ asset('public/news_pdfs/news-sample2.pdf') }}" target="_blank"
-                                        class="fw-bold text-primary">
-                                        Budget Summary for FY 2024-25
-                                    </a><br>
-                                    <a href="{{ asset('public/news_pdfs/news-sample2.pdf') }}" target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-1">
-                                        View PDF
-                                    </a>
-                                </td>
-                            </tr>
-
-                            {{-- Another Description News --}}
-                            <tr>
-                                <td>06 Aug 2025, 11:45 AM</td>
-                                <td>
-                                    <strong>Summer Art Workshop for Kids</strong>
-                                    <p class="mb-1 short-desc" id="short-desc-2">
-                                        Registrations are open for the annual summer art workshop for children aged 8-14...
-                                    </p>
-                                    <div class="full-desc d-none" id="full-desc-2">
-                                        Registrations are open for the annual summer art workshop for children aged 8-14.
-                                        The workshop will cover painting, clay modeling, and digital art. Seats are limited,
-                                        so early registration is advised.
-                                    </div>
-                                    <a href="javascript:void(0)" class="text-primary" onclick="toggleDescription(2)">Read
-                                        More</a>
-                                </td>
-                            </tr>
+                                            {{-- LINK TYPE --}}
+                                        @elseif($item->news_type === 'link' && $item->link_url)
+                                            <a href="{{ $item->link_url }}" target="_blank" class="fw-bold text-primary">
+                                                {{ $item->news_title }}
+                                            </a>
+                                        @else
+                                            <strong>{{ $item->news_title }}</strong>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center">No news available</td>
+                                </tr>
+                            @endforelse
                         </tbody>
+
                     </table>
                 </div>
 

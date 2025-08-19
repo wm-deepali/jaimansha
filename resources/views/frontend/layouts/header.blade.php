@@ -58,7 +58,7 @@
                             <li>
 
                                 <div class="text">
-                                    <p><a href="{{route('frontend.home') }}">Career</a>
+                                     <p><a href="{{route('career') }}">Career</a>
                                     </p>
                                 </div>
                             </li>
@@ -73,7 +73,7 @@
                             <li>
 
                                 <div class="text">
-                                    <p><a href="{{ route('frontend.blog.index')}}">News</a></p>
+                                    <p><a href="{{ route('news')}}">News</a></p>
                                 </div>
                             </li>
                             <li>

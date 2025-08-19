@@ -22,37 +22,42 @@ class DonateusController extends Controller
     }
 
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'donation_for' => 'required|string',
-        'amount' => 'required|numeric|min:1',
-        'first_name' => 'required|string|max:255',
-        'mobile' => 'required|string|max:20',
-        'email' => 'required|email',
-        'address' => 'required|string',
-        'country' => 'required|string',
-        'state' => 'required|string',
-        'city' => 'required|string',
-        'pincode' => 'required|string|max:10',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'donation_for' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+            'first_name' => 'required|string|max:255',
+            'mobile' => 'required|string|max:20',
+            'email' => 'required|email',
+            'address' => 'required|string',
+            'country' => 'required|string',
+            'state' => 'required|string',
+            'city' => 'required|string',
+            'pincode' => 'required|string|max:10',
+        ]);
 
-    // Save data
-    Donor::create([
-        'full_name' => $validated['first_name'],
-        'email' => $validated['email'],
-        'phone' => $validated['mobile'],
-        'address' => $validated['address'],
-        'city' => $validated['city'],
-        'state' => $validated['state'],
-        'country' => $validated['country'],
-        'zip_code' => $validated['pincode'],
-        'donor_type' => $validated['donation_for'],
-        'amount' => $validated['amount'], // ✅ Added amount here
-    ]);
+        $countryName = \App\Models\Country::find($validated['country'])?->name ?? '';
+        $stateName = \App\Models\State::find($validated['state'])?->name ?? '';
+        $cityName = \App\Models\City::find($validated['city'])?->name ?? '';
 
-   return redirect()->back()->with('success', 'Donation form is filled');;
-}
+
+        Donor::create([
+            'full_name' => $validated['first_name'],
+            'email' => $validated['email'],
+            'phone' => $validated['mobile'],
+            'address' => $validated['address'],
+            'city' => $cityName,
+            'state' => $stateName,
+            'country' => $countryName,
+            'zip_code' => $validated['pincode'],
+            'donor_type' => $validated['donation_for'],
+            'amount' => $validated['amount'],
+        ]);
+
+        return redirect()->back()->with('success', 'Donation form is filled');
+        ;
+    }
 
 
 

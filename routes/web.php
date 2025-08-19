@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\City;
+use Illuminate\Http\Request;
+use App\Models\State;
+use App\Models\admin\news\NewsModel;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\AboutUsController;
@@ -36,6 +40,7 @@ use App\Http\Controllers\Frontend\FormRequestController;
 use App\Http\Controllers\Frontend\BecomeVolunttersController;
 use App\Http\Controllers\Frontend\ComplaintSuggestionController;
 use App\Http\Controllers\Frontend\DonationSauseController;
+use App\Http\Controllers\Frontend\CareerController;
 
 // Avoid redirect loop
 Route::get('/admin/login', function () {
@@ -83,6 +88,8 @@ Route::get('/e-magazines_cover', [EMagazineController::class, 'index'])->name('f
 Route::get('/e-magazines_cover/{id}', [EMagazineController::class, 'show'])->name('frontend.emagazine_details.show');
 Route::get('/emagazines/{id}', [\App\Http\Controllers\Frontend\EMagazineController::class, 'show'])
     ->name('frontend.emagazine_details.show');
+    Route::get('/writer/{id}/emagazines', [EMagazineController::class, 'showWriter'])->name('writer.articles');
+
 Route::get('/e-magazines', [EMagazineCoverController::class, 'index'])->name('frontend.emagazinecover');
 
 
@@ -126,16 +133,17 @@ Route::get('/testimonial', [TestimonialController::class, 'index'])->name('front
 Route::post('/testimonial/store', [TestimonialController::class, 'store'])->name('frontend.testimonial.store');
 
 
-
 Route::get('/faq', function () {
     return view('frontend.faq.index');
 })->name('faq');
+
 Route::get('/news', function () {
-    return view('frontend.news.index');
+    $news = NewsModel::orderBy('created_at', 'desc')->get();
+    return view('frontend.news.index', compact('news'));
 })->name('news');
-Route::get('/career', function () {
-    return view('frontend.career.index');
-})->name('career');
+
+Route::get('/career', [CareerController::class, 'index'])->name('career');
+Route::post('/career/apply', [CareerController::class, 'apply'])->name('career.apply');
 
 // Contact page show
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -178,6 +186,27 @@ Route::get('/charity-donate', function () {
 })->name('frontend.charity.index');
 
 Route::post('/donate', [DonationSauseController::class, 'store'])->name('frontend.home.introduction.store');
+
+
+
+Route::get('/get-states', function (Request $request) {
+    $countryId = $request->query('country_id'); // Use query() instead of property for safety
+    if (!$countryId) {
+        return response()->json(['states' => []], 400); // Bad request if no country_id
+    }
+
+    $states = State::where('country_id', $countryId)
+                  ->orderBy('name')
+                  ->get(['id', 'name']); // Select only required fields
+
+    return response()->json(['states' => $states]);
+})->name('get.states');
+
+Route::get('/get-cities', function (Request $request) {
+    $stateId = $request->state_id;
+    $cities = City::where('state_id', $stateId)->orderBy('name')->get();
+    return response()->json(['cities' => $cities]);
+})->name('get.cities');
 
 require __DIR__ . '/admin.php';
 

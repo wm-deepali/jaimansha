@@ -62,6 +62,12 @@
         margin-bottom: 15px;
     }
     
+    .error-message {
+  font-size: 0.9rem;
+  color: #dc3545; /* Bootstrap red */
+  margin-top: 4px;
+}
+
 </style>
     <!--About One Start -->
        <section class="about-one">
@@ -111,7 +117,7 @@
                                        <h3>Our Mission:</h3>
                                    </div>
                                    @php
-    $headingText = strip_tags(optional($latestIntroduction->visionAndMission)->heading); // remove HTML
+$headingText = strip_tags(optional($latestIntroduction->visionAndMission)->heading); // remove HTML
     $words = explode(' ', $headingText);
     $trimmedText = implode(' ', array_slice($words, 0, 30));
 @endphp
@@ -190,9 +196,16 @@
                 @endforeach
             </select>
         </div>
-        <div class="mb-3"><input type="text" name="name" class="form-control" placeholder="Full Name" required></div>
-        <div class="mb-3"><input type="email" name="email" class="form-control" placeholder="Email Id" required></div>
-        <div class="mb-3"><input type="text" name="mobile_number" class="form-control" placeholder="Mobile Number" required></div>
+        <div class="mb-3"><input type="text" name="name" class="form-control" placeholder="Full Name" required>
+      <div class="error-message text-danger" style="display:none;"></div>
+
+    </div>
+        <div class="mb-3"><input type="email" name="email" class="form-control" placeholder="Email Id" required>
+      <!-- <div class="error-message text-danger" style="display:none;"></div> -->
+</div>
+        <div class="mb-3"><input type="text" name="mobile_number" class="form-control" placeholder="Mobile Number" required>
+      <div class="error-message text-danger" style="display:none;"></div>
+    </div>
         <div class="mb-3 d-flex align-items-center gap-2">
             <input type="text" name="whatsapp_number" class="form-control" placeholder="WhatsApp Number">
             <div class="form-check">
@@ -202,17 +215,37 @@
         </div>
         <div class="mb-3"><textarea name="full_address" class="form-control" placeholder="Full Address" rows="2"></textarea></div>
        <div class="row">
+        
     <div class="col-md-6 mb-3">
-        <input type="text" name="country" class="form-control" placeholder="Country">
+    @php 
+        use App\Models\Country;
+        $countries = Country::all(); 
+    @endphp
+    <select class="form-select" name="country" id="inputSelectCountry" required>
+  <option value="">Select Country</option>
+  @foreach($countries as $country)
+    <option value="{{ $country->id }}">{{ $country->name }}</option>
+  @endforeach
+</select>
+  <div class="error-message text-danger" style="display:none;"></div>
     </div>
+    
     <div class="col-md-6 mb-3">
-        <input type="text" name="state" class="form-control" placeholder="State">
+      <select name="state" id="inputSelectState" class="form-select" required>
+    <option value="">Select State</option>
+    <!-- States will be loaded dynamically -->
+</select>
+  <div class="error-message text-danger" style="display:none;"></div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-md-6 mb-3">
-        <input type="text" name="city" class="form-control" placeholder="City">
+        <select name="city" id="inputSelectCity" class="form-select" required>
+    <option value="">Select City</option>
+</select>
+  <div class="error-message text-danger" style="display:none;"></div>
+
     </div>
     <div class="col-md-6 mb-3">
         <input type="text" name="pin_code" class="form-control" placeholder="Pin Code">
@@ -263,6 +296,76 @@
     </div>
 
 </form>
+
+
+<!-- Include jQuery library if not already included -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@push('after-scripts')
+
+<script>
+  $(function() {
+    // When country changes
+    $("#inputSelectCountry").on("change", function() {
+      const countryId = $(this).val();
+      console.log("Country selected:", countryId);
+
+      if(countryId) {
+        $.ajax({
+          url: `/get-states?country_id=${countryId}`,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            let stateOptions = '<option value="">Select State</option>';
+            $.each(data.states, function(i, state) {
+              stateOptions += `<option value="${state.id}">${state.name}</option>`;
+            });
+            
+$("#inputSelectState").html(stateOptions);
+$("#inputSelectState").niceSelect('update');
+
+
+          },
+          error: function(err) {
+            console.error("Error fetching states:", err);
+          }
+        });
+      } else {
+        $("#inputSelectState").html('<option value="">Select State</option>');
+        $("#inputSelectCity").html('<option value="">Select City</option>');
+      }
+    });
+
+    // When state changes
+    $("#inputSelectState").on("change", function() {
+      const stateId = $(this).val();
+      console.log("State selected:", stateId);
+
+      if(stateId) {
+        $.ajax({
+          url: `/get-cities?state_id=${stateId}`,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            let cityOptions = '<option value="">Select City</option>';
+            $.each(data.cities, function(i, city) {
+              cityOptions += `<option value="${city.id}">${city.name}</option>`;
+            });
+            $("#inputSelectCity").html(cityOptions);
+$("#inputSelectCity").niceSelect('update');
+
+          },
+          error: function(err) {
+            console.error("Error fetching cities:", err);
+          }
+        });
+      } else {
+        $("#inputSelectCity").html('<option value="">Select City</option>');
+      }
+    });
+  });
+</script>
+
+@endpush
 
 <script>
 
@@ -358,28 +461,73 @@ document.getElementById('sameAsMobile').addEventListener('change', function() {
        
        
        <script>
-   const nextBtn = document.querySelector(".next-btn");
-const backBtn = document.querySelector(".back-btn");
+
+        const nextBtn = document.querySelector(".next-btn");
 const step1 = document.querySelector(".form-step-1");
 const step2 = document.querySelector(".form-step-2");
 const stepHead1 = document.querySelector(".step-1");
 const stepHead2 = document.querySelector(".step-2");
+const form = document.getElementById('donation-form-one');
 
 nextBtn.addEventListener("click", () => {
-    // Check if reCAPTCHA is completed
-    const recaptchaResponse = grecaptcha.getResponse();  // This gets the current recaptcha response
+  let isValid = true;
+  // Select all required inputs/selects/textareas inside Step 1 only:
+  const inputs = step1.querySelectorAll('select[required], textarea[required]');
 
-    if (!recaptchaResponse) {
-        alert("Please complete the reCAPTCHA before proceeding.");
-        return; // stop here, don’t move to next step
+  inputs.forEach(input => {
+    validateField(input);        // Show/hide error message
+    if (!input.checkValidity()) {
+      isValid = false;
     }
+  });
 
-    // reCAPTCHA completed, go next
-    step1.classList.add("d-none");
-    step2.classList.remove("d-none");
-    stepHead1.classList.remove("active");
-    stepHead2.classList.add("active");
+  if (!isValid) {
+    step1.querySelector(':invalid').focus();
+    return;  // block step change
+  }
+
+  // Captcha check as before...
+  const recaptchaResponse = grecaptcha.getResponse();
+  if (!recaptchaResponse) {
+    alert("Please complete the reCAPTCHA before proceeding.");
+    return;
+  }
+
+  // Show step 2 as before...
+   step1.classList.add("d-none");
+  step2.classList.remove("d-none");
+  stepHead1.classList.remove("active");
+  stepHead2.classList.add("active");
 });
+
+
+
+function validateField(field) {
+  // Look for the error container next to select or after .nice-select container
+  let errorDiv = field.nextElementSibling;
+  
+  // If next sibling is nice-select div, error might be after that
+  if (errorDiv && errorDiv.classList.contains('nice-select')) {
+    errorDiv = errorDiv.nextElementSibling;
+  }
+  
+  if (!errorDiv || !errorDiv.classList.contains('error-message')) return;
+
+  if (!field.checkValidity()) {
+    if (field.validity.valueMissing) {
+      errorDiv.textContent = 'This field is required.';
+    } else if (field.validity.typeMismatch) {
+      errorDiv.textContent = 'Please enter a valid value.';
+    } else {
+      errorDiv.textContent = 'Invalid input.';
+    }
+    errorDiv.style.display = 'block';
+  } else {
+    errorDiv.textContent = '';
+    errorDiv.style.display = 'none';
+  }
+}
+
 
 backBtn.addEventListener("click", () => {
     step2.classList.add("d-none");
@@ -404,4 +552,8 @@ document.querySelectorAll(".amount-buttons .btn").forEach(btn => {
         document.querySelector('input[name="custom_amount"]').value = btn.dataset.amount;
     });
 });
+
+
+
 </script>
+

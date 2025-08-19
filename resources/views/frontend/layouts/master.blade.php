@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/flaticon.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/owl.carousel.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/owl.theme.default.min.css') }}" />
-    <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/nice-select.css') }}" />
+    <!-- <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/nice-select.css') }}" /> -->
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/jquery-ui.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/vegas.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/aos.css') }}" />
@@ -73,7 +73,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/style.css') }}" />
     <link rel="stylesheet" href="{{ asset('frontend/admin/assets/css/responsive.css') }}" />
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <style>
     .custom-dropdown {
@@ -136,7 +136,7 @@
 
     @include('frontend.layouts.form')
 
-
+ @stack('after-scripts')
     <div class="page-wrapper">
         @include('frontend.layouts.header')
 
@@ -248,7 +248,7 @@
     <script src="{{ asset('frontend/admin/assets/js/isotope.js') }}"></script>
     <script src="{{ asset('frontend/admin/assets/js/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('frontend/admin/assets/js/jquery-ui.js') }}"></script>
-    <script src="{{ asset('frontend/admin/assets/js/jquery.nice-select.min.js') }}"></script>
+    <!-- <script src="{{ asset('frontend/admin/assets/js/jquery.nice-select.min.js') }}"></script> -->
     <script src="{{ asset('frontend/admin/assets/js/jquery.circleType.js') }}"></script>
     <script src="{{ asset('frontend/admin/assets/js/jquery.fittext.js') }}"></script>
     <script src="{{ asset('frontend/admin/assets/js/jquery.lettering.min.js') }}"></script>
